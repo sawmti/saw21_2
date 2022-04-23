@@ -1,11 +1,11 @@
-[![Continuous integration for SAW template](https://github.com/sawmti/saw21_0/actions/workflows/ci.yml/badge.svg)](https://github.com/sawmti/saw21_0/actions/workflows/ci.yml)
+[![Continuous integration for SAW template](https://github.com/sawmti/saw21_2/actions/workflows/ci.yml/badge.svg)](https://github.com/sawmti/saw21_2/actions/workflows/ci.yml)
 
 # Project structure
 
 This repository contains a simple skeleton of a web page which contains a REST service implemented in Node and a simple Web client that invokes the service. 
 
-- [client](https://github.com/sawmti/saw21_0/tree/main/client) contains the source code of the web client (html/css/javascript files)
-- [api](https://github.com/sawmti/saw21_0/tree/main/api) contains the source code of the REST API
+- [client](https://github.com/sawmti/saw21_2/tree/main/client) contains the source code of the web client (html/css/javascript files)
+- [api](https://github.com/sawmti/saw21_2/tree/main/api) contains the source code of the REST API
 
 ## Running locally
 
@@ -26,8 +26,8 @@ You should be able to access the application in [http://localhost:3000](http://l
 It is possible to run the application from docker with
 
 ```
-docker build -t "saw210" .
-docker run saw210
+docker build -t "saw212" .
+docker run saw212
 ```
 
 or 
