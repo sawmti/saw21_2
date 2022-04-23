@@ -1,0 +1,31 @@
+name: Continuous integration for SAW template
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: 12.14.1
+    - run: npm ci
+    - run: npm test
+  deploy-webapp:
+    needs: [build-test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.8.9 # This is the action
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "saw210" # Must exist and be unique in Heroku
+          heroku_email: "jelabra@gmail.com"
+          usedocker: true
+          docker_build_args: |
+            API_URI

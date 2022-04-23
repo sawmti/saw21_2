@@ -1,0 +1,12 @@
+.git
+.gitignore
+.github
+.metals
+.vscode
+Dockerfile
+LICENSE
+README.md
+docker-compose.yml
+.dockerignore
+data
+node_modules
