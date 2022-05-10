@@ -1,8 +1,7 @@
 
 
-
 async function getEntities() {
-    const response = await fetch('/api/entities');
+    const response = await fetch('/api/entitieswiki');
     const data = await response.json();
     return data
 }
@@ -21,30 +20,48 @@ function fillEntities() {
 }
 
 async function getEntitiesFromWikiData() {
-    const response = await fetch('/api/entities/2500062');
+    const response = await fetch('/api/entitieswiki/2500062');
     console.log("1. :" + JSON.stringify(response));
     const data = await response.json();
     return data
 }
-//searchEntities();
-async function searchEntities() {
-  await  getEntitiesFromWikiData().then(async data => {
-        console.log("aca!!!!");
-        console.log(data.label);
-        console.log(JSON.stringify(data.results));
-        const ulEntities = document.getElementById("entities");
-        //data.entities.forEach(entity => {
-            const liEntity = document.createElement("li");
-            console.log(1)
-            const text = document.createTextNode(data);
-            console.log(2)
-            liEntity.appendChild(text);
-            console.log(3)
-            ulEntities.appendChild(liEntity);
 
-       // })
-    })
+async function searchEntities() {
+    try{
+
+        await  getEntitiesFromWikiData().then(async data => {
+            
+            // console.log(data.label);
+            // console.log(JSON.stringify(data));
+            const response = await fetch("/api/entities/", {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                  },
+                body: JSON.stringify(data),
+            });
+
+            const body = await response.json();
+            console.log("Respuesta:", body)
+
+        //     const ulEntities = document.getElementById("entities");
+        //     //data.entities.forEach(entity => {
+        //         const liEntity = document.createElement("li");
+        //         console.log(1)
+        //         const text = document.createTextNode(data);
+        //         console.log(2)
+        //         liEntity.appendChild(text);
+        //         console.log(3)
+        //         ulEntities.appendChild(liEntity);
+
+        // // })
+        })
+    }catch(error){
+        console.log("Ha ocurrido un error: " +  error);
+    }
 }
+
 
 
 

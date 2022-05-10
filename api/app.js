@@ -1,28 +1,30 @@
 const express = require('express');
+var bodyParser = require('body-parser')
 const path = require('path');
 const https = require('https');
 const querystring = require("querystring")
-
+const MongoClient = require('mongodb').MongoClient;
 const app = express();
 const root = path.resolve(__dirname, '..');
-
+const urlMongo = ""; //ACÁ PONER URL DEL MONGO Y VER DONDE PONERLA EN LAS ENV
+var jsonParser = bodyParser.json()
 // Log invocations
 app.use(function (req, res, next) { console.log(req.url); next(); });
 
 // Directly serve static content from /client
 app.use(express.static(root + '/client'));
 
-// Simple REST API that returns some entities
-app.get('/api/entities', (req, res) =>
-  res.send({
-    entities:
-      ['Q2887',
-        'Q33986'
-      ]
-  })
-);
+// // Simple REST API that returns some entities
+// app.get('/api/entities', (req, res) =>
+//   res.send({
+//     entities:
+//       ['Q2887',
+//         'Q33986'
+//       ]
+//   })
+// );
 
-app.get('/api/entities/:id', (req, res) => {
+app.get('/api/entitieswiki/:id', (req, res) => {
   console.log(`Searching ${req.params.id}`);
   const queryParams = new URLSearchParams(
     [['query', `select * where { wd:Q${req.params.id} rdfs:label $label . FILTER (lang($label) = 'es')}`],
@@ -56,6 +58,97 @@ app.get('/api/entities/:id', (req, res) => {
   }).on('error', err => {
     console.log('Error: ', err.message);
   })
+});
+
+
+//Apis CRUD
+//POST
+app.post('/api/entities',jsonParser, async function (req, res, next) {
+
+  try{
+    var url =urlMongo;
+    const db = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
+    const dbo = db.db("saw_21_2");
+    await dbo.collection('entities').insertOne(req.body).then(() =>  db.close());  
+        
+    res.send(200,{ response: 'Se ha insertado correctamente' })
+  }catch(error){
+    res.send(500,{ response: 'Ha ocurrido un error: ' + error})
+  }
+ 
+});
+
+//PUT
+app.put('/api/entities',jsonParser, async function (req, res, next) {
+
+  try{
+    var url =urlMongo;
+    const db = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
+    const dbo = db.db("saw_21_2");
+    var entitytoupdate = await dbo.collection('entities').findOne({ "entity": req.body.entity });
+    if(!req.body.entity || !entitytoupdate){
+      //Debe venir este campo para hacer el match y además la orden debe existir
+      res.send(500,{ response: 'Debe ingresar un entity' });
+
+    }else{
+      console.log("esta es la entity " + entitytoupdate);
+      //Se actualiza con los nuevos campos
+      await dbo.collection('entities').updateOne(
+            { entity:req.body.entity },
+            { $set: req.body },
+            { upsert: false }
+      ).then(() => db.close());
+      res.send(200,{ response: 'Se ha actualizado correctamente' })
+      
+    }
+
+  }catch(error){
+    res.send(500,{ response: 'Ha ocurrido un error: ' + error})
+  }
+ 
+});
+
+//DELETE
+app.delete('/api/entities/:id', async (req, res) => {
+  
+  try{
+    var url =urlMongo;
+    const db = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
+    const dbo = db.db("saw_21_2");
+
+    var entitytoupdate = await dbo.collection('entities').findOne({ "entity": req.params.id });
+    if(!req.params.id || !entitytoupdate){
+      //Debe venir este campo para hacer el match y además la orden debe existir
+      res.send(500,{ response: 'Debe ingresar un entity existente' });
+
+    }else{
+      await dbo.collection('entities').deleteOne({entity:req.params.id}).then(() =>  db.close());  
+        res.send(200,{ response: 'Se ha eliminado correctamente' })
+      
+    }
+
+  }catch(error){
+    res.send(500,{ response: 'Ha ocurrido un error: ' + error})
+  }
+});
+
+//GET 
+app.get('/api/entities/:id', async (req, res) => {
+  try{
+    var url =urlMongo;
+    const db = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
+    const dbo = db.db("saw_21_2");
+    var filter = {};
+
+    if(req.params.id != 0)
+      filter = {entity: req.params.id }
+
+    var entities = await dbo.collection('entities').find(filter).toArray();
+    res.send(200,{ entities})
+
+  }catch(error){
+    res.send(500,{ response: 'Ha ocurrido un error: ' + error})
+  }
 });
 
 module.exports = app;
