@@ -1,22 +1,22 @@
 const express = require('express');
 var bodyParser = require('body-parser')
 const path = require('path');
-const https = require('https');
-const querystring = require("querystring")
+// const https = require('https');
+// const querystring = require("querystring")
 const MongoClient = require('mongodb').MongoClient;
 const app = express();
 const root = path.resolve(__dirname, '..');
 const urlMongo = ""; //ACÁ PONER URL DEL MONGO Y VER DONDE PONERLA EN LAS ENV
 var jsonParser = bodyParser.json()
 const axios = require('axios');
-const { Console } = require('console');
+// const { Console } = require('console');
 // Log invocations
 app.use(function (req, res, next) { console.log(req.url); next(); });
 
 // Directly serve static content from /client
 app.use(express.static(root + '/client'));
 
-// // Simple REST API that returns some entities
+//Simple REST API that returns some entities
 // app.get('/api/entities', (req, res) =>
 //   res.send({
 //     entities:
@@ -26,6 +26,7 @@ app.use(express.static(root + '/client'));
 //   })
 // );
 
+//Api que retorna en wikidata según texto
 app.get('/api/entitieswiki/:id', async (req, res) => {
   
     try {
@@ -86,7 +87,7 @@ app.get('/api/entitieswiki/:id', async (req, res) => {
 });
 
 
-//Apis CRUD
+//Apis CRUD al Mongo
 //POST
 app.post('/api/entities',jsonParser, async function (req, res, next) {
 
@@ -158,19 +159,19 @@ app.delete('/api/entities/:id', async (req, res) => {
 });
 
 //GET 
-app.get('/api/entities/:id', async (req, res) => {
+app.get('/api/entities/:desc', async (req, res) => {
   try{
     var url =urlMongo;
     const db = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
     const dbo = db.db("saw_21_2");
     var filter = {};
 
-    if(req.params.id != 0)
-      filter = {entity: req.params.id }
+    if(req.params.desc != 0)
+      filter = {description: req.params.desc }
 
     var entities = await dbo.collection('entities').find(filter).toArray();
-    res.send(200,{ entities})
-
+    
+    res.status(200).send(entities)
   }catch(error){
     res.send(500,{ response: 'Ha ocurrido un error: ' + error})
   }
