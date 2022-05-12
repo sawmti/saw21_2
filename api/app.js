@@ -8,6 +8,8 @@ const app = express();
 const root = path.resolve(__dirname, '..');
 const urlMongo = ""; //ACÁ PONER URL DEL MONGO Y VER DONDE PONERLA EN LAS ENV
 var jsonParser = bodyParser.json()
+const axios = require('axios');
+const { Console } = require('console');
 // Log invocations
 app.use(function (req, res, next) { console.log(req.url); next(); });
 
@@ -24,40 +26,63 @@ app.use(express.static(root + '/client'));
 //   })
 // );
 
-app.get('/api/entitieswiki/:id', (req, res) => {
-  console.log(`Searching ${req.params.id}`);
-  const queryParams = new URLSearchParams(
-    [['query', `select * where { wd:Q${req.params.id} rdfs:label $label . FILTER (lang($label) = 'es')}`],
-    ['format', 'json']
-    ]).toString();
-  const options = {
-    hostname: 'query.wikidata.org',
-    port: 443,
-    path: `/sparql?${queryParams}`,
-    method: 'GET',
-    headers: { 'User-Agent': 'Example/1.0' }
-  }
-  https.get(options, httpres => {
-    let data = [];
-    console.log('Status Code:', httpres.statusCode);
-    httpres.on('data', chunk => {
-      data.push(chunk);
-    });
-    httpres.on('end', () => {
-      console.log('Response ended:');
-      const result = Buffer.concat(data).toString();
-      console.log(`Result obtained:\n${result}\n---`);
-      const json = JSON.parse(result);
-      const bindings = json.results.bindings;
-      const label = bindings.length > 0 ? bindings[0].label.value : 'Not found';
-      res.send({
-        entity: `${req.params.id}`,
-        label: `${label}`
-      })
-    });
-  }).on('error', err => {
-    console.log('Error: ', err.message);
-  })
+app.get('/api/entitieswiki/:id', async (req, res) => {
+  
+    try {
+        var url = `https://en.wikipedia.org/w/rest.php/v1/search/page?q=${req.params.id}&limit=10`
+        var config = {
+            method: 'get',
+            url: url,
+            headers: {}
+        };
+       
+        await  axios(config)
+            .then(async function (response) {
+             
+                res.status(200).send(response.data.pages)
+            })
+            .catch(function (error) {
+                console.log(error);
+                res.send(500,{ response: error })
+            });
+    } catch (error) {
+        console.log(error);
+        res.send(500,{ response: error })
+    }
+
+
+  // const queryParams = new URLSearchParams(
+  //   [['query', `select * where { wd:Q${req.params.id} rdfs:label $label . FILTER (lang($label) = 'es')}`],
+  //   ['format', 'json']
+  //   ]).toString();
+  // const options = {
+  //   hostname: 'query.wikidata.org',
+  //   port: 443,
+  //   path: `/sparql?${queryParams}`,
+  //   method: 'GET',
+  //   headers: { 'User-Agent': 'Example/1.0' }
+  // }
+  // https.get(options, httpres => {
+  //   let data = [];
+  //   console.log('Status Code:', httpres.statusCode);
+  //   httpres.on('data', chunk => {
+  //     data.push(chunk);
+  //   });
+  //   httpres.on('end', () => {
+  //     console.log('Response ended:');
+  //     const result = Buffer.concat(data).toString();
+  //     console.log(`Result obtained:\n${result}\n---`);
+  //     const json = JSON.parse(result);
+  //     const bindings = json.results.bindings;
+  //     const label = bindings.length > 0 ? bindings[0].label.value : 'Not found';
+  //     res.send({
+  //       entity: `${req.params.id}`,
+  //       label: `${label}`
+  //     })
+  //   });
+  // }).on('error', err => {
+  //   console.log('Error: ', err.message);
+  // })
 });
 
 
@@ -150,5 +175,8 @@ app.get('/api/entities/:id', async (req, res) => {
     res.send(500,{ response: 'Ha ocurrido un error: ' + error})
   }
 });
+
+
+
 
 module.exports = app;
