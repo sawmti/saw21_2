@@ -4,7 +4,7 @@ const path = require('path');
 const MongoClient = require('mongodb').MongoClient;
 const app = express();
 const root = path.resolve(__dirname, '..');
-const urlMongo = ""; //ACÁ PONER URL DEL MONGO Y VER DONDE PONERLA EN LAS ENV
+const urlMongo = "mongodb://admin:4%26%24COk0wGRWTygjB%2a%2aG2%2a1hhInstance@18.229.117.60:26033/?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false"; //ACÁ PONER URL DEL MONGO Y VER DONDE PONERLA EN LAS ENV
 var jsonParser = bodyParser.json()
 const axios = require('axios');
 // Log invocations
@@ -17,7 +17,7 @@ app.use(express.static(root + '/client'));
 app.get('/api/entitieswiki/:id', async (req, res) => {
   
     try {
-        var url = `https://en.wikipedia.org/w/rest.php/v1/search/page?q=${req.params.id}&limit=10`
+        var url = `https://en.wikipedia.org/w/rest.php/v1/search/page?q=${req.params.id}&limit=1`
         var config = {
             method: 'get',
             url: url,
@@ -64,16 +64,16 @@ app.put('/api/entities',jsonParser, async function (req, res, next) {
     var url =urlMongo;
     const db = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
     const dbo = db.db("saw_21_2");
-    var entitytoupdate = await dbo.collection('entities').findOne({ "entity": req.body.entity });
-    if(!req.body.entity || !entitytoupdate){
+    var entitytoupdate = await dbo.collection('entities').findOne({ "key": req.body.key });
+    if(!req.body.key || !entitytoupdate){
       //Debe venir este campo para hacer el match y además la orden debe existir
-      res.send(500,{ response: 'Debe ingresar un entity' });
+      res.send(500,{ response: 'Debe ingresar un key' });
 
     }else{
-      console.log("esta es la entity " + entitytoupdate);
+      console.log("esta es la key " + entitytoupdate);
       //Se actualiza con los nuevos campos
       await dbo.collection('entities').updateOne(
-            { entity:req.body.entity },
+            { key:req.body.key },
             { $set: req.body },
             { upsert: false }
       ).then(() => db.close());
@@ -95,13 +95,13 @@ app.delete('/api/entities/:id', async (req, res) => {
     const db = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
     const dbo = db.db("saw_21_2");
 
-    var entitytoupdate = await dbo.collection('entities').findOne({ "entity": req.params.id });
+    var entitytoupdate = await dbo.collection('entities').findOne({ "key": req.params.id });
     if(!req.params.id || !entitytoupdate){
       //Debe venir este campo para hacer el match y además la orden debe existir
-      res.send(500,{ response: 'Debe ingresar un entity existente' });
+      res.send(500,{ response: 'Debe ingresar un key existente' });
 
     }else{
-      await dbo.collection('entities').deleteOne({entity:req.params.id}).then(() =>  db.close());  
+      await dbo.collection('entities').deleteOne({key:req.params.id}).then(() =>  db.close());  
         res.send(200,{ response: 'Se ha eliminado correctamente' })
       
     }
@@ -129,8 +129,5 @@ app.get('/api/entities/:desc', async (req, res) => {
     res.send(500,{ response: 'Ha ocurrido un error: ' + error})
   }
 });
-
-
-
 
 module.exports = app;

@@ -8,11 +8,15 @@ async function searchEntities() {
         console.log(objtoshow);
         const ulEntities = document.getElementById("entities");
         document.getElementById("entities").innerHTML = "";
-        objtoshow.forEach(object => {
-            const liEntity = document.createElement("li");
-            const text = document.createTextNode(object.description);
-            liEntity.appendChild(text);
-            ulEntities.append(liEntity);
+       // document.getElementById("buscar").innerHTML = "";
+        objtoshow.forEach(async object => {
+            
+            ulEntities.append(await getelement(object.title,"title"));
+            ulEntities.append(await getelementImg(object.thumbnail.url));
+            ulEntities.append(await getelement(object.description,"description"));
+            ulEntities.insertAdjacentHTML("beforeend", object.excerpt,"excerpt");
+            ulEntities.append(await getelement(object.key,"key"));
+           
         });
      
     }catch(error){
@@ -20,7 +24,32 @@ async function searchEntities() {
     }
 }
 
+async function getelement(show, id){
+    const li = document.createElement("li");
+    li.setAttribute("id", id);
+    const text = document.createTextNode(show);
+    li.appendChild(text);
+    return  li
+}
+
+async function getelementImg(url){
+    var img = new Image();
+    img.src = url;
+    img.id = "image"
+    return  img
+}
+
 async function saveEntity(){
+
+    var data = {
+            title: document.getElementById("title").innerHTML,
+            image:document.getElementById("image").src,
+            description: document.getElementById("description").innerHTML,
+        //excerpt
+            key:  document.getElementById("key").innerHTML
+
+    }
+
     const response = await fetch("/api/entities/", {
         method: "POST",
         headers: {
@@ -44,10 +73,10 @@ async function searchOwnEntities(){
         const ulEntities = document.getElementById("entities");
         document.getElementById("entities").innerHTML = "";
         objtoshow.forEach(object => {
-            const liEntity = document.createElement("li");
+            const liDescription = document.createElement("li");
             const text = document.createTextNode(object.description);
-            liEntity.appendChild(text);
-            ulEntities.append(liEntity);
+            liDescription.appendChild(text);
+            ulEntities.append(liDescription);
         });
      
     }catch(error){
