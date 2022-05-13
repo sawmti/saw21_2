@@ -4,7 +4,7 @@ const path = require('path');
 const MongoClient = require('mongodb').MongoClient;
 const app = express();
 const root = path.resolve(__dirname, '..');
-const urlMongo = "mongodb://admin:4%26%24COk0wGRWTygjB%2a%2aG2%2a1hhInstance@18.229.117.60:26033/?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false"; //ACÁ PONER URL DEL MONGO Y VER DONDE PONERLA EN LAS ENV
+const urlMongo = ""; //ACÁ PONER URL DEL MONGO Y VER DONDE PONERLA EN LAS ENV
 var jsonParser = bodyParser.json()
 const axios = require('axios');
 // Log invocations
