@@ -1,3 +1,8 @@
+$(document).ready(function() {
+    //cero para todos
+    searchOwnEntities("0");
+});
+
 async function searchEntities() {
     try{
         var valuetoSearch =  document.getElementById("txtEntity").value;
@@ -43,9 +48,9 @@ async function saveEntity(){
 
     var data = {
             title: document.getElementById("title").innerHTML,
-            image:document.getElementById("image").src,
+            image: document.getElementById("image").src,
             description: document.getElementById("description").innerHTML,
-        //excerpt
+        
             key:  document.getElementById("key").innerHTML
 
     }
@@ -63,22 +68,26 @@ async function saveEntity(){
     console.log("Respuesta:", body)
 }
 
-async function searchOwnEntities(){
+async function searchOwnEntities(value){
     try{
-        var valuetoSearch =  document.getElementById("txtEntity").value;
-
-        var obj  = await fetch('/api/entities/'+valuetoSearch);
+        var valuetoSearch = value ? value : document.getElementById("txtEntity").value;
+        var url =`/api/entities/${valuetoSearch}`;
+        var obj  = await fetch(url);
         var objtoshow = await obj.json();
+        var content = "<table><tr><td>Número</td><td>Título</td><td>Descripción</td><td>Imagen</td><td>Acciones<td></tr>";
+        var i=1;
+        
+        for (const object of objtoshow){
+            content += '<tr><td>' + i + '</td><td>' + object.title + '</td><td>' + object.description + '</td><td><img style=" max-width:50px;" src = ' + object.image + 
+                        '></td><td><i class="fas fa-edit"></i> <i class="fas fa-trash"></i></i><td></tr>'; //object.key
+            i++;
+        }
 
-        const ulEntities = document.getElementById("entities");
-        document.getElementById("entities").innerHTML = "";
-        objtoshow.forEach(object => {
-            const liDescription = document.createElement("li");
-            const text = document.createTextNode(object.description);
-            liDescription.appendChild(text);
-            ulEntities.append(liDescription);
-        });
-     
+        content +="</table>"
+        
+        $('#contenttable').append(content);
+
+
     }catch(error){
         console.log("Ha ocurrido un error: " +  error);
     }
