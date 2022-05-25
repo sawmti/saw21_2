@@ -1,7 +1,7 @@
 const express = require('express');
 var bodyParser = require('body-parser')
 const path = require('path');
-const MongoClient = require('mongodb').MongoClient;
+const { MongoClient,ObjectId } = require('mongodb');
 const app = express();
 const root = path.resolve(__dirname, '..');
 const urlMongo = ""; //ACÁ PONER URL DEL MONGO Y VER DONDE PONERLA EN LAS ENV
@@ -136,22 +136,24 @@ app.put('/api/entities', jsonParser, async function (req, res, next) {
 app.delete('/api/entities/:id', async (req, res) => {
 
   try {
+
     var url = urlMongo;
     const db = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
     const dbo = db.db("saw_21_2");
-
-    var entitytoupdate = await dbo.collection('entities').findOne({ "key": req.params.id });
+    console.log("Entró al delete con este id: "+ req.params.id);
+    var entitytoupdate = await dbo.collection('entities').findOne({'_id': new ObjectId(req.params.id)});
+    
     if (!req.params.id || !entitytoupdate) {
       //Debe venir este campo para hacer el match y además la orden debe existir
       res.send(500, { response: 'Debe ingresar un key existente' });
 
     } else {
-      await dbo.collection('entities').deleteOne({ key: req.params.id }).then(() => db.close());
+      await dbo.collection('entities').deleteOne({'_id':new ObjectId(req.params.id)}).then(() => db.close());
       res.send(200, { response: 'Se ha eliminado correctamente' })
-
     }
 
   } catch (error) {
+    console.log(error);
     res.send(500, { response: 'Ha ocurrido un error: ' + error })
   }
 });
@@ -163,9 +165,9 @@ app.get('/api/entities/:desc', async (req, res) => {
     const db = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
     const dbo = db.db("saw_21_2");
     var filter = {};
-
+    
     if (req.params.desc != 0)
-      filter = { description: req.params.desc }
+      filter = {'_id': new ObjectId(req.params.desc)}
 
     var entities = await dbo.collection('entities').find(filter).toArray();
 

@@ -31,7 +31,7 @@
 								<input type="text" id="txtEntity">
 								<!-- <button type="button"  onclick="searchEntities()">Buscar nueva entidad</button> -->
 								<li><a href="#buscar" onclick="searchEntities()">Buscar</a></li>
-								<li><a style="white-space: nowrap" href="#guardar" >Contenido Actual</a></li>
+								<li><a style="white-space: nowrap" href="#ownentities" onclick="searchOwnEntities('0')">Contenido Actual</a></li>
 								<!-- <li><a href="#actualizar">Actualizar</a></li>
 								<li><a href="#borrar">Borrar</a></li> -->
 								<!--<li><a href="#elements">Elements</a></li>-->
@@ -53,7 +53,7 @@
 							</article>
 
 						<!-- guardar -->
-							<article id="guardar">
+							<article id="ownentities">
 								<div>
 									<h1>Contenido Actual</h1>
 									<div id="contenttable"> </div>
@@ -63,7 +63,7 @@
 						<!-- actualizar -->
 							<article id="actualizar">
 								<h2 class="major">Actualizar</h2>
-								<span class="image main"><img src="images/pic04.jpg" alt="" /></span>
+								<ul id="entitiesedit" />
 							</article>
 
 						<!-- borrar -->
