@@ -109,16 +109,16 @@ app.put('/api/entities', jsonParser, async function (req, res, next) {
     var url = urlMongo;
     const db = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
     const dbo = db.db("saw_21_2");
-    var entitytoupdate = await dbo.collection('entities').findOne({ "key": req.body.key });
-    if (!req.body.key || !entitytoupdate) {
+    var entitytoupdate = await dbo.collection('entities').findOne({'_id': new ObjectId(req.body.id)});
+    if (!req.body.id || !entitytoupdate) {
       //Debe venir este campo para hacer el match y además la orden debe existir
       res.send(500, { response: 'Debe ingresar un key' });
 
     } else {
-      console.log("esta es la key " + entitytoupdate);
+      console.log(JSON.stringify(req.body));
       //Se actualiza con los nuevos campos
       await dbo.collection('entities').updateOne(
-        { key: req.body.key },
+        {'_id':new ObjectId(req.body.id)},
         { $set: req.body },
         { upsert: false }
       ).then(() => db.close());
