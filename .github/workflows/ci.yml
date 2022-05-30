@@ -24,8 +24,8 @@ jobs:
       - uses: akhileshns/heroku-deploy@v3.8.9 # This is the action
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "saw212" # Must exist and be unique in Heroku
-          heroku_email: "jelabra@gmail.com"
+          heroku_app_name: "tareajln" # Must exist and be unique in Heroku
+          heroku_email: "julian.ibanez.figueroa@gmail.com"
           usedocker: true
           docker_build_args: |
             API_URI

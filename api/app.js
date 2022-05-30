@@ -84,7 +84,6 @@ app.get('/api/entitieswiki/:id', async (req, res) => {
   }
 });
 
-
 //Apis CRUD al Mongo
 //POST
 app.post('/api/entities', jsonParser, async function (req, res, next) {
@@ -112,7 +111,7 @@ app.put('/api/entities', jsonParser, async function (req, res, next) {
     var entitytoupdate = await dbo.collection('entities').findOne({'_id': new ObjectId(req.body.id)});
     if (!req.body.id || !entitytoupdate) {
       //Debe venir este campo para hacer el match y además la orden debe existir
-      res.send(500, { response: 'Debe ingresar un key' });
+      res.send(500, { response: 'Debe ingresar un id' });
 
     } else {
       console.log(JSON.stringify(req.body));
