@@ -1,10 +1,11 @@
+ require('dotenv').config();
 const express = require('express');
 var bodyParser = require('body-parser')
 const path = require('path');
 const { MongoClient,ObjectId } = require('mongodb');
 const app = express();
 const root = path.resolve(__dirname, '..');
-const urlMongo = ""; //ACÁ PONER URL DEL MONGO Y VER DONDE PONERLA EN LAS ENV
+const urlMongo = process.env.mongoconnection; //ACÁ PONER URL DEL MONGO Y VER DONDE PONERLA EN LAS ENV
 var jsonParser = bodyParser.json()
 const axios = require('axios');
 // Log invocations
