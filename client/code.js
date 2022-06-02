@@ -7,16 +7,28 @@ async function getelement(show, id){
     li.appendChild(text);
     return  li
 }
-async function getTextBoxelement(show, id, hide){
+async function getTextBoxelement(show, id, hide,lbltext){
     var txtBox = document.createElement("INPUT");
     txtBox.setAttribute("type", "text");
     txtBox.setAttribute("id", "txt"+id);
     txtBox.value = show;
-    if(hide)
-        txtBox.style.display = 'none';
+    
+    
+
     const li = document.createElement("li");
     li.setAttribute("id", id);
-   
+
+    if(hide){
+        txtBox.style.display = 'none';
+        li.style.display = 'none';
+    }
+ 
+    if(lbltext){
+        var lbl = document.createElement("label");
+        lbl.innerHTML = lbltext;   
+        li.appendChild(lbl);
+    }
+
     li.appendChild(txtBox);
     return  li
 }
@@ -50,13 +62,13 @@ async function fillObjectEdit(objtoshow, entity){
     console.log(objtoshow);
     objtoshow.forEach(async object => {
         
-        ulEntities.append(await getTextBoxelement(object.title,"title"));
-        ulEntities.append(await getTextBoxelement((object.thumbnail ? object.thumbnail.url : object.image),"url"));
+        ulEntities.append(await getTextBoxelement(object.title,"title",false,"Título"));
+        ulEntities.append(await getTextBoxelement((object.thumbnail ? object.thumbnail.url : object.image),"url",false,"Imagen"));
         ulEntities.append(await getelementImg(object.thumbnail ? object.thumbnail.url : object.image));
-        ulEntities.append(await getTextBoxelement(object.description,"description"));
-        ulEntities.append(await getTextBoxelement(object.key,"key"));
-        ulEntities.append(await getTextBoxelement(object.excerpt,"excerpt"));
-        ulEntities.append(await getTextBoxelement(object._id,"id",true));
+        ulEntities.append(await getTextBoxelement(object.description,"description",false,"Descripción"));
+        ulEntities.append(await getTextBoxelement(object.key,"key",false,"Key"));
+        ulEntities.append(await getTextBoxelement(object.excerpt,"excerpt",false,"Extracto"));
+        ulEntities.append(await getTextBoxelement(object._id,"id",true,""));
        
     });
 }
