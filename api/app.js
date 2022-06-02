@@ -63,7 +63,8 @@ app.get('/api/entitieswiki/:id', async (req, res) => {
 
 
 
-    var url = `https://en.wikipedia.org/w/rest.php/v1/search/page?q=${req.params.id}&limit=1`
+    var url = `https://es.wikipedia.org/w/rest.php/v1/search/page?q=${req.params.id}&limit=1`
+    console.log(url);
     var config = {
         method: 'get',
         url: url,
@@ -72,15 +73,16 @@ app.get('/api/entitieswiki/:id', async (req, res) => {
 
     await  axios(config)
         .then(async function (response) {
-
+          console.log("NOOOOO");
             res.status(200).send(response.data.pages)
         })
         .catch(function (error) {
-            console.log(error);
+            //console.log(error);
+            console.log("error!!!!!!!");
             res.send(500,{ response: error })
         });
   } catch (error) {
-    console.log(error);
+   // console.log(error);
     res.send(500, { response: error })
   }
 });

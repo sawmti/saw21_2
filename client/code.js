@@ -78,7 +78,7 @@ async function fillObjectEdit(objtoshow, entity){
 
 async function searchEntities() {
     try{
-        var valuetoSearch =  document.getElementById("txtEntity").value;
+        var valuetoSearch =  document.getElementById("txtEntity").value.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         document.getElementById('buscar').style.display = '';   
         if(valuetoSearch){
             
@@ -86,7 +86,12 @@ async function searchEntities() {
             document.getElementById("btnsave").style.display = "block";
             var obj  = await fetch('/api/entitieswiki/'+valuetoSearch);
             var objtoshow = await obj.json();
-            await fillObject(objtoshow,"entities");
+            if (obj.status!= 200){
+                alert(objtoshow.response.message)
+                $('.close').trigger('click');
+            }else{
+                await fillObject(objtoshow,"entities");
+            }
         }else{
             
             document.getElementById("lblError").style.display = "display";
