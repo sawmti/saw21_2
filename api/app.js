@@ -73,13 +73,12 @@ app.get('/api/entitieswiki/:id', async (req, res) => {
 
     await  axios(config)
         .then(async function (response) {
-          console.log("NOOOOO");
+          
             res.status(200).send(response.data.pages)
         })
         .catch(function (error) {
-            //console.log(error);
-            console.log("error!!!!!!!");
-            res.send(500,{ response: error })
+          console.log(error);
+          res.send(500,{ response: error })
         });
   } catch (error) {
    // console.log(error);
