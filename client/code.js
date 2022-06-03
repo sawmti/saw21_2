@@ -87,7 +87,7 @@ async function searchEntities() {
             var obj  = await fetch('/api/entitieswiki/'+valuetoSearch);
             var objtoshow = await obj.json();
             if (obj.status!= 200){
-                alert(objtoshow.response.message)
+                alert("Ingrese un país valido")
                 $('.close').trigger('click');
             }else{
                 await fillObject(objtoshow,"entities");
@@ -175,7 +175,7 @@ async function searchOwnEntities(value){
         var i=1;
         
         for (const object of objtoshow){
-            content += `<tr>
+            content += `<tr itemscope itemtype="https://schema.org/Country">
                             <td> ${i} </td>
                             <td itemprop="name"> ${object.title} </td>
                             <td itemprop="containedInPlace"> ${object.description} </td>

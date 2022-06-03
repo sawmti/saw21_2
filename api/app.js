@@ -11,7 +11,7 @@ const axios = require('axios');
 // Log invocations
 app.use(function (req, res, next) { console.log(req.url); next(); });
 
-const { Console } = require('console');
+const { Console, count } = require('console');
 const https = require('https');
 const querystring = require("querystring")
 
@@ -23,25 +23,40 @@ app.use(express.static(root + '/client'));
 app.get('/api/entitieswiki/:id', async (req, res) => {
 
   try {
-    var url = `https://es.wikipedia.org/w/rest.php/v1/search/page?q=${req.params.id}&limit=1`
-    console.log(url);
-    var config = {
-        method: 'get',
-        url: url,
-        headers: {}
-    };
 
-    await  axios(config)
-        .then(async function (response) {
-          
-            res.status(200).send(response.data.pages)
-        })
-        .catch(function (error) {
-          console.log(error);
-          res.send(500,{ response: error })
-        });
+
+    var url = urlMongo;
+    const db = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
+    const dbo = db.db("saw_21_2");
+    var data = await dbo.collection('countries').findOne();
+    
+    if(data.countries.filter(e => e.name_es.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase() === req.params.id.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase()).length > 0){
+      console.log("Es país");
+      var url = `https://es.wikipedia.org/w/rest.php/v1/search/page?q=${req.params.id}&limit=1`
+      console.log(url);
+      var config = {
+          method: 'get',
+          url: url,
+          headers: {}
+      };
+  
+      await  axios(config)
+          .then(async function (response) {
+            
+              res.status(200).send(response.data.pages)
+          })
+          .catch(function (error) {
+            console.log(error);
+            res.send(500,{ response: error })
+          });
+    }else{
+      console.log("No es país");
+      res.send(400, { response: "Debe ingresar un país" })
+    }
+
   } catch (error) {
-   // console.log(error);
+    console.log("!asdsadasd");
+    console.log(error);
     res.send(500, { response: error })
   }
 });
