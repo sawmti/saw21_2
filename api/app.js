@@ -23,46 +23,6 @@ app.use(express.static(root + '/client'));
 app.get('/api/entitieswiki/:id', async (req, res) => {
 
   try {
-
-    // const queryParams = new URLSearchParams(
-    //   //[['query', `select * where { wd:Q${req.params.id} rdfs:label $label . FILTER (lang($label) = 'es')}`],
-
-    //   [['query', 'SELECT ?item ?itemLabel ?_image WHERE { ?item wdt:P279 wd:Q28803. SERVICE wikibase:label { bd:serviceParam wikibase:language "es". } OPTIONAL { ?item wdt:P18 ?_image. }}  LIMIT 100'],
-
-
-    //   ['format', 'json']
-    //   ]).toString();
-    // const options = {
-    //   hostname: 'query.wikidata.org',
-    //   port: 443,
-    //   path: `/sparql?${queryParams}`,
-    //   method: 'GET',
-    //   headers: { 'User-Agent': 'Example/1.0' }
-    // }
-    // https.get(options, httpres => {
-    //   let data = [];
-    //   console.log('Status Code:', httpres.statusCode);
-    //   httpres.on('data', chunk => {
-    //     data.push(chunk);
-    //   });
-    //   httpres.on('end', () => {
-    //     console.log('Response ended:');
-    //     const result = Buffer.concat(data).toString();
-    //     console.log(`Result obtained:\n${result}\n---`);
-    //     const json = JSON.parse(result);
-    //     const bindings = json.results.bindings;
-    //     const label = bindings.length > 0 ? bindings[0].label.value : 'Not found';
-    //     res.send({
-    //       entity: `${req.params.id}`,
-    //       label: `${label}`
-    //     })
-    //   });
-    // }).on('error', err => {
-    //   console.log('Error: ', err.message);
-    // })
-
-
-
     var url = `https://es.wikipedia.org/w/rest.php/v1/search/page?q=${req.params.id}&limit=1`
     console.log(url);
     var config = {
@@ -113,7 +73,7 @@ app.put('/api/entities', jsonParser, async function (req, res, next) {
     var entitytoupdate = await dbo.collection('entities').findOne({'_id': new ObjectId(req.body.id)});
     if (!req.body.id || !entitytoupdate) {
       //Debe venir este campo para hacer el match y además la orden debe existir
-      res.send(500, { response: 'Debe ingresar un id' });
+      res.send(400, { response: 'Debe ingresar un id' });
 
     } else {
       console.log(JSON.stringify(req.body));
@@ -146,7 +106,7 @@ app.delete('/api/entities/:id', async (req, res) => {
     
     if (!req.params.id || !entitytoupdate) {
       //Debe venir este campo para hacer el match y además la orden debe existir
-      res.send(500, { response: 'Debe ingresar un key existente' });
+      res.send(400, { response: 'Debe ingresar un key existente' });
 
     } else {
       await dbo.collection('entities').deleteOne({'_id':new ObjectId(req.params.id)}).then(() => db.close());
