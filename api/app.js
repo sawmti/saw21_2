@@ -135,19 +135,30 @@ app.delete('/api/entities/:id', async (req, res) => {
 });
 
 //GET 
-app.get('/api/entities/:desc', async (req, res) => {
+app.get('/api/entities/:desc/:typeid', async (req, res) => {
   try {
     var url = urlMongo;
     const db = await MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
     const dbo = db.db("saw_21_2");
     var filter = {};
-    
-    if (req.params.desc != 0)
-      filter = {'_id': new ObjectId(req.params.desc)}
+    var entities;
+    if (req.params.typeid == 1){ // == 1 es por id mongo
+      if (req.params.desc != 0)
+        filter = {'_id': new ObjectId(req.params.desc)}
 
-    var entities = await dbo.collection('entities').find(filter).toArray();
+    entities = await dbo.collection('entities').find(filter).toArray();
 
-    res.status(200).send(entities)
+    }else{
+      filter = {'key': req.params.desc}
+      var entities = await dbo.collection('entities').find(filter).toArray();
+    }
+  
+    if (entities.length === 0 ){
+      res.send(404, { response: 'País no encontrado' });
+    }else{
+      res.status(200).send(entities);
+    }
+
   } catch (error) {
     res.send(500, { response: 'Ha ocurrido un error: ' + error })
   }

@@ -124,7 +124,7 @@ async function deleteEntity(identity){
 
 async function editEntity(identity){
     
-    var obj  = await fetch('/api/entities/'+identity);
+    var obj  = await fetch('/api/entities/'+identity+'/1');
     var objtoshow = await obj.json();
     await fillObjectEdit(objtoshow,"entitiesedit");
    // $('#ownentities').hide();
@@ -168,7 +168,7 @@ async function searchOwnEntities(value){
     try{
         $('#contenttable').empty();
         var valuetoSearch = value ? value : document.getElementById("txtEntity").value;
-        var url =`/api/entities/${valuetoSearch}`;
+        var url =`/api/entities/${valuetoSearch}`+'/1';
         var obj  = await fetch(url);
         var objtoshow = await obj.json();
         var content = "<table><tr><td>Número</td><td>Título</td><td>Descripción</td><td>Palabra clave</td><td>Imagen</td><td>Acciones<td></tr>";
