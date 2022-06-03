@@ -171,15 +171,16 @@ async function searchOwnEntities(value){
         var url =`/api/entities/${valuetoSearch}`;
         var obj  = await fetch(url);
         var objtoshow = await obj.json();
-        var content = "<table><tr><td>Número</td><td>Título</td><td>Descripción</td><td>Imagen</td><td>Acciones<td></tr>";
+        var content = "<table><tr><td>Número</td><td>Título</td><td>Descripción</td><td>Palabra clave</td><td>Imagen</td><td>Acciones<td></tr>";
         var i=1;
         
         for (const object of objtoshow){
             content += `<tr>
                             <td> ${i} </td>
-                            <td> ${object.title} </td>
-                            <td> ${object.description} </td>
-                            <td><img style=" max-width:50px;" src=${object.image}></td>
+                            <td itemprop="name"> ${object.title} </td>
+                            <td itemprop="containedInPlace"> ${object.description} </td>
+                            <td itemprop="keywords"> ${object.key} </td>
+                            <td><img itemprop="url" style=" max-width:50px;" src=${object.image}></td>
                             <td><i class="fas fa-edit" href="#buscar" onclick="editEntity('${object._id}')" style="	cursor: pointer !important;" title="Editar"></i> &nbsp; &nbsp; &nbsp; 
                                 <i class="fas fa-trash" onclick="deleteEntity('${object._id}')"style="	cursor: pointer !important;" title="Eliminar"></i>
                             </td>
